@@ -1,0 +1,32 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Fetch games with ranks from BGG
+
+Resources:
+  FetchGamesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: fetch_games
+      Description: ''
+      MemorySize: 2048
+      Timeout: 5
+      Handler: app.lambda_handler
+      Runtime: python3.12
+      PackageType: Zip
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - S3CrudPolicy:
+            BucketName: !Ref GameRankBucket
+      Events:
+        WeeklyTrigger:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 0 * * ? *)
+      Environment:
+        Variables:
+          BUCKET_NAME: !Ref GameRankBucket
+  GameRankBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: bgg-rank-scrapes
+      # BucketName: !Sub "bgg-rank-scrapes-${AWS::StackName}"
