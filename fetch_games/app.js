@@ -12,7 +12,7 @@ exports.handler = async (event, context) => {
         urls.push(`https://boardgamegeek.com/browse/boardgame/page/${i}`);
     }
 
-    const dataLines = ['rank;name;link'];
+    const dataLines = ['rank;id;name;link'];
 
     for (const url of urls) {
         try {
@@ -28,8 +28,17 @@ exports.handler = async (event, context) => {
                 const gameName = gameLinkTag.text().trim();
                 const gameLink = gameLinkTag.attr('href');
 
-                if (rank && gameName && gameLink) {
-                    dataLines.push(`${rank};${gameName};${gameLink}`);
+                // Extract game ID from URL (e.g., /boardgame/224517/brass-birmingham -> 224517)
+                let gameId = '';
+                if (gameLink) {
+                    const match = gameLink.match(/\/boardgame\/(\d+)\//);
+                    if (match) {
+                        gameId = match[1];
+                    }
+                }
+
+                if (rank && gameId && gameName && gameLink) {
+                    dataLines.push(`${rank};${gameId};${gameName};${gameLink}`);
                 }
             });
         } catch (error) {
