@@ -1,0 +1,19 @@
+{
+  "name": "bgg-rank-scraper",
+  "version": "1.0.0",
+  "description": "Scrapes BoardGameGeek rankings and stores them in S3",
+  "main": "app.js",
+  "scripts": {
+    "test": "node test-local.js"
+  },
+  "dependencies": {
+    "axios": "^1.6.7",
+    "cheerio": "^1.0.0-rc.12",
+    "@aws-sdk/client-s3": "^3.525.0"
+  },
+  "devDependencies": {
+    "dotenv": "^16.4.5"
+  },
+  "author": "",
+  "license": "ISC"
+}

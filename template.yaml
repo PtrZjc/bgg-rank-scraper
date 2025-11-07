@@ -9,9 +9,9 @@ Resources:
       CodeUri: fetch_games
       Description: ''
       MemorySize: 2048
-      Timeout: 5
-      Handler: app.lambda_handler
-      Runtime: python3.12
+      Timeout: 30
+      Handler: app.handler
+      Runtime: nodejs20.x
       PackageType: Zip
       Policies:
         - AWSLambdaBasicExecutionRole

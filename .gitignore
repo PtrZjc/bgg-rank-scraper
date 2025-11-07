@@ -1,3 +1,4 @@
 .aws-sam
 .idea
 bgg-rank-scrapes
+**/node_modules
