@@ -48,7 +48,7 @@ exports.handler = async (event, context) => {
     }
 
     const fileContent = dataLines.join('\n');
-    const fileName = `${new Date().toISOString().split('T')[0]}.txt`;
+    const fileName = `${new Date().toISOString().split('T')[0]}.csv`;
 
     const putObjectCommand = new PutObjectCommand({
         Bucket: bucketName,
