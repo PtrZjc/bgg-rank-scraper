@@ -11,9 +11,18 @@ const mockS3Client = {
             fs.mkdirSync(outputDir, { recursive: true });
         }
 
-        // Write the file locally instead of to S3
+        // Extract bucket name from the command
+        const bucketName = command.input.Bucket;
         const fileName = command.input.Key;
-        const filePath = path.join(outputDir, fileName);
+
+        // Create subdirectory for the bucket if needed
+        const bucketDir = path.join(outputDir, bucketName);
+        if (!fs.existsSync(bucketDir)) {
+            fs.mkdirSync(bucketDir, { recursive: true });
+        }
+
+        // Write the file locally instead of to S3
+        const filePath = path.join(bucketDir, fileName);
         fs.writeFileSync(filePath, command.input.Body);
 
         console.log(`✓ File saved locally: ${filePath}`);
@@ -33,7 +42,9 @@ require.cache[require.resolve('@aws-sdk/client-s3')] = {
 };
 
 // Set environment variables for local testing
-process.env.BUCKET_NAME = 'bgg-rank-scrapes-local';
+process.env.PRIMARY_BUCKET_NAME = 'bgg-rank-scrapes-local';
+process.env.SECONDARY_BUCKET_NAME = 'bgg-rank-history-local';
+process.env.SECONDARY_BUCKET_PREFIX = 'data/';
 process.env.AWS_REGION = 'us-east-1';
 
 // Import the handler after mocking

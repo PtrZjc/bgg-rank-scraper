@@ -57,10 +57,20 @@ To deploy this project to AWS, follow these steps:
 ## Functionality
 
 - The lambda function defined in `fetch_games/app.js` scrapes the first 5 pages of board game rankings from BoardGameGeek.
-- It constructs a semicolon-separated list of game rankings, names, and links, which is then stored in an S3 bucket as a text file.
+- It constructs a semicolon-separated list of game rankings, names, and links, which is then stored in two S3 buckets:
+  - **Primary bucket**: `bgg-rank-scrapes` (files in root)
+  - **Secondary bucket**: `bgg-rank-history.pzjc.pl` (files under `data/` prefix)
+- The lambda function uses partial success error handling:
+  - If the primary upload fails, the Lambda function fails and can be retried
+  - If the secondary upload fails, the Lambda function still succeeds but logs the error
+  - This ensures the primary data is always available while allowing resilience for the secondary bucket
 - The lambda function is triggered daily by a scheduled event defined in the `template.yaml`.
 
 ## Modifying the Configuration
 
-- If you need to change the configuration, such as the S3 bucket name or the lambda function's memory size, you can do so in `template.yaml`.
+- If you need to change the configuration, such as the S3 bucket names or the lambda function's memory size, you can do so in `template.yaml`.
+- The following environment variables are configured:
+  - `PRIMARY_BUCKET_NAME`: The main S3 bucket for storing scraped data (default: `bgg-rank-scrapes`)
+  - `SECONDARY_BUCKET_NAME`: The secondary S3 bucket for redundancy (default: `bgg-rank-history.pzjc.pl`)
+  - `SECONDARY_BUCKET_PREFIX`: The prefix path in the secondary bucket (default: `data/`)
 - Any changes to the deployment process can be modified in `samconfig.toml`.

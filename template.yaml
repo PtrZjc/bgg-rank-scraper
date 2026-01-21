@@ -17,6 +17,8 @@ Resources:
         - AWSLambdaBasicExecutionRole
         - S3CrudPolicy:
             BucketName: !Ref GameRankBucket
+        - S3CrudPolicy:
+            BucketName: bgg-rank-history.pzjc.pl
       Events:
         WeeklyTrigger:
           Type: Schedule
@@ -24,7 +26,9 @@ Resources:
             Schedule: cron(0 0 * * ? *)
       Environment:
         Variables:
-          BUCKET_NAME: !Ref GameRankBucket
+          PRIMARY_BUCKET_NAME: !Ref GameRankBucket
+          SECONDARY_BUCKET_NAME: bgg-rank-history.pzjc.pl
+          SECONDARY_BUCKET_PREFIX: data/
   GameRankBucket:
     Type: AWS::S3::Bucket
     Properties:
