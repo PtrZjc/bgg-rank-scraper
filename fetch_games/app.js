@@ -7,6 +7,17 @@ const primaryBucket = process.env.PRIMARY_BUCKET_NAME;
 const secondaryBucket = process.env.SECONDARY_BUCKET_NAME;
 const secondaryPrefix = process.env.SECONDARY_BUCKET_PREFIX || '';
 
+/** Headers matching HTTPie (which BGG accepts); avoid Accept-Encoding: br to reduce bot detection */
+const bggRequestHeaders = {
+  'User-Agent': 'HTTPie/3.2.2',
+  'Accept': '*/*',
+  'Accept-Encoding': 'gzip, deflate'
+};
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 /**
  * Upload file content to an S3 bucket
  */
@@ -28,9 +39,13 @@ exports.handler = async (event, context) => {
 
   const dataLines = ['rank;id;name;link'];
 
-  for (const url of urls) {
+  for (let i = 0; i < urls.length; i++) {
+    const url = urls[i];
+    if (i > 0) {
+      await sleep(600);
+    }
     try {
-      const response = await axios.get(url);
+      const response = await axios.get(url, { headers: bggRequestHeaders });
       const $ = cheerio.load(response.data);
 
       // Find all rows that have an id starting with 'row_'
